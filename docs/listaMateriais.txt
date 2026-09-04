@@ -1,0 +1,5 @@
+- Raspberry py
+- Sensor de presença / capacitivo / sensor de movimento
+- Esp32 / Arduino / Fonte 5V
+- Motor cc
+- Webcam 
