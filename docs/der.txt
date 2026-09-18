@@ -1,0 +1,64 @@
+// Define a estrutura do banco de dados do projeto de verificação de peças
+
+Table usuarios {
+  id integer [primary key]
+  nome varchar
+  email varchar [unique]
+  senha_hash varchar
+  perfil varchar // OPERADOR, ADMIN
+}
+
+Table esteiras {
+  id integer [primary key]
+  nome_identificador varchar
+  velocidade_atual integer
+  status varchar // ATIVA, PAUSADA, MANUTENCAO
+  data_alteracao timestamp
+}
+
+Table dados_producao {
+  id integer [primary key]
+  esteira_id integer [not null]
+  data_hora_inicio timestamp
+  total_processadas integer
+  total_aprovadas integer
+  total_recusadas integer
+}
+
+Table pecas_recusadas {
+  id integer [primary key]
+  esteira_id integer [not null]
+  operador_id integer
+  data_hora timestamp
+  imagem_url varchar [note: 'Caminho/URL da foto salva no servidor Docker']
+  erro_identificado varchar
+  nivel_acuracia decimal
+}
+
+// Relacionamentos
+
+Ref: esteiras.id < dados_producao.esteira_id // 1:N
+
+Ref: esteiras.id < pecas_recusadas.esteira_id // 1:N
+
+Ref: usuarios.id < pecas_recusadas.operador_id // 1:N
+
+// Exemplo de registros fictícios para testes
+
+Records usuarios(id, nome, email, senha_hash, perfil) {
+  1, 'Carlos Silva', 'carlos@empresa.com', '$2a$10$hash1', 'OPERADOR'
+  2, 'Ana Souza', 'ana@empresa.com', '$2a$10$hash2', 'ADMIN'
+}
+
+Records esteiras(id, nome_identificador, velocidade_atual, status) {
+  1, 'Linha Principal 01', 80, 'ATIVA'
+}
+
+Records dados_producao(id, esteira_id, data_hora_inicio, total_processadas, total_aprovadas, total_recusadas) {
+  101, 1, '2026-09-18 08:00:00', 500, 485, 15
+}
+
+Records pecas_recusadas(id, esteira_id, operador_id, data_hora, imagem_url, erro_identificado, nivel_acuracia) {
+  1, 1, 1, '2026-09-18 10:20:30', '/storage/recusadas/20260918_102030.jpg', 'Rachadura', 0.9542
+  2, 1, 1, '2026-09-18 11:15:02', '/storage/recusadas/20260918_111502.jpg', 'Incompleta', 0.9810
+}
