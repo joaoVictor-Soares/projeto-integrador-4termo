@@ -1,0 +1,31 @@
+com.sistema.inspecao
+│
+├── config                      # Configurações da aplicação
+│   ├── OpcUaClientConfig.java  # Configuração e inicialização do cliente Eclipse Milo
+│   ├── WebClientConfig.java    # Configuração do WebClient para consumo da API Python
+│   └── SecurityConfig.java     # Configurações do Spring Security (Autenticação do App Mobile)
+│
+├── controller                  # Endpoints REST (para o App React Native e Dashboard)
+│   ├── InspectionController.java # Endpoints de histórico, status atual e disparos manuais
+│   └── MachineController.java    # Estado do CLP e métricas da esteira
+│
+├── service                     # Regras de Negócio e Orquestração
+│   ├── InspectionOrchestratorService.java # Orquestra: Câmera -> IA -> OPC-UA -> Nuvem
+│   ├── OpcUaService.java       # Leitura de tags de gatilho e escrita do resultado (Aprovado/Reprovado)
+│   ├── CameraService.java      # Acionamento e captura de imagem da câmera USB
+│   └── CloudSyncService.java   # Sincronização assíncrona dos eventos com o banco/nuvem
+│
+├── client                      # Comunicação com serviços externos
+│   └── PythonMlClient.java     # Comunicação HTTP com o script/API de Machine Learning (Python)
+│
+├── model / dto                 # Objetos de Transferência de Dados e Entidades
+│   ├── dto/
+│   │   ├── InspectionResultDto.java
+│   │   └── MachineStatusDto.java
+│   └── entity/
+│       └── InspectionLog.java   # Entidade JPA para o histórico local
+│
+├── repository                  # Repositórios de Acesso a Dados (Spring Data JPA)
+│   └── InspectionRepository.java
+│
+└── Application.java            # Classe principal do Spring Boot
