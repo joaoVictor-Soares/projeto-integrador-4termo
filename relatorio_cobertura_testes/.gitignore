@@ -1,0 +1,53 @@
+# Segredos e credenciais (nunca versionar)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.crt
+*.der
+secrets/
+credentials*.json
+
+# Backend (Spring/Maven/Gradle)
+backend-spring/target/
+backend-spring/build/
+backend-spring/**/application-local*.properties
+backend-spring/**/application-prod*.properties
+*.log
+
+# Docker / banco
+cloud-docker/data/
+cloud-docker/volumes/
+*.sql.gz
+*.dump
+*.bak
+
+# Imagens capturadas pela câmera (podem ter dados sensíveis)
+storage/
+*.jpg.cache
+
+# IA: pesos grandes e ambientes
+ia-modelo/.venv/
+ia-modelo/venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+*.pt
+*.pth
+*.ckpt
+# (versione modelos finais via Git LFS ou release, com o SHA-256 registrado)
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
