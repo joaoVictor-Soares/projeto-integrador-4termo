@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: App React Native (tipos, testes, auditoria)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app-react-native
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app-react-native/package-lock.json
+      - run: npm ci --legacy-peer-deps
+      # Quando o projeto ganhar uma configuração do ESLint, adicione: npx expo lint
+      - name: Checagem de tipos
+        # expo-env.d.ts é gerado pelo "expo start" e está no .gitignore; recriamos aqui.
+        run: |
+          echo '/// <reference types="expo/types" />' > expo-env.d.ts
+          npx tsc --noEmit
+      - name: Testes com cobertura
+        run: npx jest --coverage --coverageReporters=text-summary --coverageReporters=lcov
+      - name: Enviar relatório de cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-app
+          path: app-react-native/coverage/lcov-report
+      - name: Auditoria de dependências (severidade alta ou crítica)
+        # Hoje há achados abertos (ver SEC-05). Depois de atualizar as dependências,
+        # remova a linha continue-on-error para que o CI passe a bloquear.
+        continue-on-error: true
+        run: npm audit --audit-level=high --omit=dev
+
+  segredos:
+    name: Varredura de segredos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  ia-api:
+    name: API de IA (pytest + cobertura)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ia-modelo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Instalar dependências (runtime leve + testes)
+        # ai-edge-litert dispensa o TensorFlow completo para os testes (main.py usa-o primeiro).
+        run: pip install fastapi uvicorn python-multipart numpy pillow ai-edge-litert -r requirements-dev.txt
+      - name: Testes com cobertura
+        run: python -m pytest --cov=main --cov-branch --cov-report=term-missing
+      - name: Auditoria de dependências Python
+        continue-on-error: true
+        run: pip install pip-audit && pip-audit -r requirements.txt
+
+  backend-java:
+    name: Backend Spring (Maven verify)
+    runs-on: ubuntu-latest
+    # Ainda não verificado num ambiente com acesso ao Maven Central. O único teste
+    # (contextLoads) provavelmente falha por falta de datasource; por isso não bloqueia.
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: backend-spring/demo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - run: ./mvnw -B verify

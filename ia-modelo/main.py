@@ -20,7 +20,6 @@ import numpy as np
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel
-
 try:
     # Runtime recomendado (o tf.lite.Interpreter está deprecado)
     from ai_edge_litert.interpreter import Interpreter

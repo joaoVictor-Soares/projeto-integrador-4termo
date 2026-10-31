@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /app-react-native
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: maven
+    directory: /backend-spring/demo
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /ia-modelo
+    schedule:
+      interval: weekly
+  # Habilite quando existir:
+  # - package-ecosystem: docker
+  #   directory: /cloud-docker
+  #   schedule: { interval: weekly }
