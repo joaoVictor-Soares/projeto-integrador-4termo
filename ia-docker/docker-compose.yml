@@ -1,0 +1,39 @@
+# Sobe tudo para teste:
+#   1) treino    : refina as fotos de dados\ e treina o modelo (roda uma vez e termina)
+#   2) api       : classifica fotos (porta 8000), so sobe depois do treino
+#   3) refinador : refina as fotos novas que chegarem em dados\aprovada e dados\reprovada
+services:
+  treino:
+    build: ./treinamento
+    image: inspecao-treino
+    volumes:
+      - ./dados:/dados
+      - ./modelos:/modelos
+    environment:
+      TREINAR_AO_SUBIR: "true"
+      EPOCAS: "25"
+    restart: "no"
+
+  api:
+    build: ./api
+    image: inspecao-ia-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./modelos:/modelos:ro
+    environment:
+      MODEL_PATH: /modelos/modelo_inspecao.tflite
+      REFINAR: "true"
+    depends_on:
+      treino:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  refinador:
+    build: ./api
+    image: inspecao-ia-api
+    entrypoint: ["python", "refinador_tampinhas.py"]
+    command: ["--raiz", "/dados", "--intervalo", "2"]
+    volumes:
+      - ./dados:/dados
+    restart: unless-stopped

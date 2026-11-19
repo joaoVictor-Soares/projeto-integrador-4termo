@@ -1,0 +1,23 @@
+{
+  "classes": [
+    "aprovadas",
+    "reprovadas"
+  ],
+  "imagens_por_classe": {
+    "aprovadas": 262,
+    "reprovadas": 209
+  },
+  "imagens_total": 471,
+  "acuracia_validacao": 0.4043,
+  "matriz_confusao": [
+    [
+      0,
+      56
+    ],
+    [
+      0,
+      38
+    ]
+  ],
+  "epocas_executadas": 7
+}

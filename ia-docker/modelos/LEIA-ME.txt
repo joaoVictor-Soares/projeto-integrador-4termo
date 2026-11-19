@@ -1,0 +1,2 @@
+Modelos gerados pelo servico "treino" (modelo_inspecao.tflite) ficam aqui.
+A API le este arquivo ao subir. Nao apague esta pasta.
